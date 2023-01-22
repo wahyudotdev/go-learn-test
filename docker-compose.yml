@@ -1,0 +1,14 @@
+version: '3.9'
+
+x-postgres-env: &postgres-env
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      <<: *postgres-env
+    ports:
+      - "5432:5432"
