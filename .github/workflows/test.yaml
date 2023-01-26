@@ -7,9 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     # Service containers to run with `runner-job`
     services:
-      - name: docker
+      docker:
         image: docker:20.10.3-dind
-        ports: 2375:2375
+        ports:
+          - 2375:2375
 
     steps:
       - name: Checkout code
