@@ -19,8 +19,5 @@ jobs:
         with:
           go-version: '1.18'
 
-      - name: Install dockertest
-        run: go install github.com/golang/dockertest@latest
-
       - name: Test with Docker
         run: go test -v ./...
