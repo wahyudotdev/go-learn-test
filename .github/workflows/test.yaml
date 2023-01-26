@@ -10,8 +10,6 @@ jobs:
       docker:
         image: docker:20.10.3-dind
         options: --privileged --publish 2375:2375 --env DOCKER_TLS_CERTDIR=""
-        ports:
-          - 2375:2375
 
     steps:
       - name: Checkout code
