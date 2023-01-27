@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"learn-mock/config"
 	"learn-mock/models"
 	"learn-mock/repository"
-	"time"
 )
 
 var (
@@ -38,7 +39,7 @@ func (r ProductHandler) Create() fiber.Handler {
 				Error: err.Error(),
 			})
 		}
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+		ctx, cancel := context.WithTimeout(context.Background(), config.TimeOut())
 		defer cancel()
 		result, err := r.repo.CreateProduct(ctx, &reqBody)
 		if err != nil {
@@ -70,7 +71,7 @@ func (r ProductHandler) Get() fiber.Handler {
 				Message: "error",
 			})
 		}
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+		ctx, cancel := context.WithTimeout(context.Background(), config.TimeOut())
 		defer cancel()
 		result, err := r.repo.GetAll(ctx, &reqQuery)
 		if err != nil {
@@ -80,6 +81,46 @@ func (r ProductHandler) Get() fiber.Handler {
 			})
 		}
 		return c.Status(fiber.StatusOK).JSON(models.GeneralResponse{
+			Data: result,
+		})
+	}
+}
+
+func (r ProductHandler) Delete() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		ctx, cancel := context.WithTimeout(context.Background(), config.TimeOut())
+		defer cancel()
+		err := r.repo.Delete(ctx, id)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(models.GeneralResponse{
+				Error: err.Error(),
+			})
+		}
+		return c.JSON(models.GeneralResponse{
+			Message: fmt.Sprintf("product with id : %s has been deleted", id),
+		})
+	}
+}
+
+func (r ProductHandler) Update() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		var reqBody models.UpdateProductRequest
+		if err := c.BodyParser(&reqBody); err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(models.GeneralResponse{
+				Error: err.Error(),
+			})
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), config.TimeOut())
+		defer cancel()
+		result, err := r.repo.Update(ctx, id, &reqBody)
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(models.GeneralResponse{
+				Error: err.Error(),
+			})
+		}
+		return c.JSON(models.GeneralResponse{
 			Data: result,
 		})
 	}

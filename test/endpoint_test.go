@@ -2,6 +2,7 @@ package test
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gofiber/fiber/v2/utils"
 	"io"
 	"learn-mock/app"
@@ -16,11 +17,18 @@ import (
 import . "github.com/smartystreets/goconvey/convey"
 
 func TestEndpoint(t *testing.T) {
-	var arrayBody = struct {
-		Message string           `json:"message"`
-		Data    []models.Product `json:"data"`
-	}{}
+
 	Convey("Test endpoint", t, func() {
+		var arrayBody = struct {
+			Message string           `json:"message"`
+			Data    []models.Product `json:"data"`
+		}{}
+
+		var objectBody = struct {
+			Message string         `json:"message"`
+			Data    models.Product `json:"data"`
+		}{}
+
 		pool, resource, db, err := SetupDockerTest()
 		if err != nil {
 			return
@@ -89,6 +97,47 @@ func TestEndpoint(t *testing.T) {
 				So(len(arrayBody.Data), ShouldEqual, 0)
 			})
 		})
+
+		Convey("update existing product", func() {
+			data := models.Product{
+				Id:   utils.UUID(),
+				Name: "soap",
+			}
+			db.Model(models.Product{}).Create(&data)
+			body := url.Values{}
+			body.Add("description", "description")
+			endpoint := fmt.Sprintf("/api/product/%s", data.Id)
+			req := httptest.NewRequest("PATCH", endpoint, strings.NewReader(body.Encode()))
+			req.Header.Set("content-type", "application/x-www-form-urlencoded")
+			res, _ := httpApp.Test(req)
+			bytes, err := io.ReadAll(res.Body)
+			if err != nil {
+				panic(err)
+			}
+			if err := json.Unmarshal(bytes, &objectBody); err != nil {
+				panic(err)
+			}
+
+			So(res.StatusCode, ShouldEqual, 200)
+			So(objectBody.Data.Description, ShouldEqual, "description")
+		})
+
+		Convey("deleted_at must not be null when product is deleted", func() {
+			data := models.Product{
+				Id:   utils.UUID(),
+				Name: "soap",
+			}
+			db.Model(models.Product{}).Create(&data)
+			endpoint := fmt.Sprintf("/api/product/%s", data.Id)
+			req := httptest.NewRequest("DELETE", endpoint, nil)
+			res, _ := httpApp.Test(req)
+
+			tx := db.Raw("SELECT * FROM products WHERE id = ? AND deleted_at IS NOT NULL ", data.Id).Scan(&data)
+
+			So(res.StatusCode, ShouldEqual, 200)
+			So(tx.RowsAffected, ShouldEqual, 1)
+		})
+
 		Reset(func() {
 			if err := pool.Purge(resource); err != nil {
 				log.Fatalln(err)

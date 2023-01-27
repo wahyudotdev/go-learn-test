@@ -24,7 +24,56 @@ paths:
       tags:
         - Product
       summary: Get product
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+            required: true
+        - in: query
+          name: limit
+          schema:
+            type: number
+            required: true
       description: "Get product"
+      responses:
+        200:
+          description: "success"
+  /product/{id}:
+    delete:
+      tags:
+        - Product
+      summary: Delete product
+      description: Delete product
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: "success"
+    patch:
+      tags:
+        - Product
+      summary: Update product name or description
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
       responses:
         200:
           description: "success"
@@ -35,6 +84,8 @@ components:
       type: object
       properties:
         name:
+          type: string
+        description:
           type: string
     Product:
       type: object

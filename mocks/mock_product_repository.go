@@ -50,6 +50,20 @@ func (mr *MockProductRepositoryMockRecorder) CreateProduct(ctx, req interface{})
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateProduct", reflect.TypeOf((*MockProductRepository)(nil).CreateProduct), ctx, req)
 }
 
+// Delete mocks base method.
+func (m *MockProductRepository) Delete(ctx context.Context, id string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Delete", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockProductRepositoryMockRecorder) Delete(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockProductRepository)(nil).Delete), ctx, id)
+}
+
 // GetAll mocks base method.
 func (m *MockProductRepository) GetAll(ctx context.Context, req *models.GetProductRequest) (*[]models.Product, error) {
 	m.ctrl.T.Helper()
@@ -63,4 +77,19 @@ func (m *MockProductRepository) GetAll(ctx context.Context, req *models.GetProdu
 func (mr *MockProductRepositoryMockRecorder) GetAll(ctx, req interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockProductRepository)(nil).GetAll), ctx, req)
+}
+
+// Update mocks base method.
+func (m *MockProductRepository) Update(ctx context.Context, id string, req *models.UpdateProductRequest) (*models.Product, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", ctx, id, req)
+	ret0, _ := ret[0].(*models.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockProductRepositoryMockRecorder) Update(ctx, id, req interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockProductRepository)(nil).Update), ctx, id, req)
 }

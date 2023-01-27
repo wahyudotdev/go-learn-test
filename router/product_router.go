@@ -14,5 +14,7 @@ func ProductRouter(router fiber.Router, db *database.Database) {
 	{
 		group.Post("/", handler.Create())
 		group.Get("/", handler.Get())
+		group.Delete("/:id", handler.Delete())
+		group.Patch("/:id", handler.Update())
 	}
 }
